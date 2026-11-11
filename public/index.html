@@ -52,13 +52,7 @@
 
   .top, .stage, .foot { position: relative; }
 
-  .top {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 6px 18px;
-    padding: 24px var(--gutter);
-  }
+  .top { padding: 24px var(--gutter); }
 
   .wordmark {
     font-size: 1.25rem;
@@ -66,15 +60,6 @@
     letter-spacing: -0.02em;
     line-height: 1;
   }
-
-  .define {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.8125rem;
-    line-height: 1.4;
-  }
-
-  .define i { font-style: italic; }
 
   .stage {
     padding: clamp(72px, 17vh, 180px) var(--gutter) 0;
@@ -134,7 +119,6 @@
 
 <header class="top">
   <span class="wordmark">aroh</span>
-  <p class="define fade" style="--d: 3s"><span lang="sa">आरोह</span> · <i>noun</i> · ascent; the rising notes of a raga.</p>
 </header>
 
 <main class="stage">
