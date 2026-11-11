@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aroh</title>
-<meta name="description" content="Aroh. Something is rising.">
+<meta name="description" content="Aroh. Everything that rises must converge.">
 <meta name="theme-color" content="#070707">
 <meta property="og:title" content="Aroh">
-<meta property="og:description" content="Something is rising.">
+<meta property="og:description" content="Everything that rises must converge.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://aroh.si/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070707'/%3E%3Cg fill='none' stroke='%23eceae4' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 54C12 36 32 40 32 22' opacity='.5'/%3E%3Cpath d='M32 54V22'/%3E%3Cpath d='M52 54C52 36 32 40 32 22' opacity='.5'/%3E%3C/g%3E%3Ccircle cx='32' cy='14' r='5' fill='%23ffffff'/%3E%3C/svg%3E">
@@ -52,7 +52,13 @@
 
   .top, .stage, .foot { position: relative; }
 
-  .top { padding: 24px var(--gutter); }
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 18px;
+    padding: 24px var(--gutter);
+  }
 
   .wordmark {
     font-size: 1.25rem;
@@ -60,6 +66,15 @@
     letter-spacing: -0.02em;
     line-height: 1;
   }
+
+  .define {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .define i { font-style: italic; }
 
   .stage {
     padding: clamp(72px, 17vh, 180px) var(--gutter) 0;
@@ -72,6 +87,16 @@
     font-weight: 400;
     letter-spacing: -0.03em;
     line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .credit {
+    margin: 18px 0 0;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   .foot {
@@ -109,10 +134,12 @@
 
 <header class="top">
   <span class="wordmark">aroh</span>
+  <p class="define fade" style="--d: 3s"><span lang="sa">आरोह</span> · <i>noun</i> · ascent; the rising notes of a raga.</p>
 </header>
 
 <main class="stage">
-  <h1 class="fade" style="--d: 2.2s">Something is rising.</h1>
+  <h1 class="fade" style="--d: 2.2s">Everything that rises must converge.</h1>
+  <p class="credit fade" style="--d: 2.8s">Pierre Teilhard de Chardin</p>
 </main>
 
 <footer class="foot fade" style="--d: 3s">
@@ -124,7 +151,7 @@
 (() => {
   const canvas = document.querySelector('.weave');
   const ctx = canvas.getContext('2d');
-  const headline = document.querySelector('h1');
+  const headline = document.querySelector('.credit');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 
   const STRANDS = 9;
@@ -133,7 +160,11 @@
   const TRUNK_DRAW = 700;  // ms for the single line to draw
   const TRUNK = 0.3;       // share of a particle's journey spent on the single line
   const SEGMENTS = 56;
+  const TAIL = 10;         // segments in the streak behind each dot
   const INK = '236,234,228';
+  // One spectral hue per strand, red at the left through violet at the right.
+  // The tint fades to white before the strands meet: a prism run backwards.
+  const HUES = Array.from({ length: STRANDS }, (_, i) => Math.round((280 * i) / (STRANDS - 1)));
 
   let W = 0, H = 0, feet = [], join = { x: 0, y: 0 }, tip = { x: 0, y: 0 };
   let particles = [], nextSpawn = [], pulse = 0;
@@ -183,15 +214,17 @@
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    const grad = ctx.createLinearGradient(0, H, 0, join.y);
-    grad.addColorStop(0, `rgba(${INK},0.03)`);
-    grad.addColorStop(1, `rgba(${INK},0.62)`);
-    ctx.strokeStyle = grad;
     ctx.lineWidth = 1;
 
     for (let i = 0; i < STRANDS; i++) {
       const p = ease(clamp01((elapsed - i * STAGGER) / DRAW));
       if (p <= 0) continue;
+      const grad = ctx.createLinearGradient(0, H, 0, join.y);
+      grad.addColorStop(0, `hsla(${HUES[i]},95%,64%,0.14)`);
+      grad.addColorStop(0.55, `hsla(${HUES[i]},95%,72%,0.6)`);
+      grad.addColorStop(0.92, `rgba(${INK},0.62)`);
+      grad.addColorStop(1, `rgba(${INK},0.62)`);
+      ctx.strokeStyle = grad;
       ctx.beginPath();
       for (let s = 0; s <= SEGMENTS; s++) {
         const [x, y] = strandPoint(i, (s / SEGMENTS) * p, sway);
@@ -222,15 +255,29 @@
       particles = particles.filter(pt => {
         pt.u += pt.speed * dt;
         if (pt.u >= 1 + TRUNK) { pulse = 1; return false; }
-        for (let k = 5; k >= 0; k--) {
-          const u = pt.u - k * 0.01;
-          if (u < 0) continue;
-          const [x, y] = journeyPoint(pt.i, u, sway);
+        // A short streak behind the dot that splits into a spectrum, like
+        // light through glass. It loses its colour as the dot nears the join.
+        const sat = 95 * (1 - clamp01((pt.u - 0.75) / 0.3));
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineWidth = 1.6;
+        let prev = journeyPoint(pt.i, pt.u, sway);
+        for (let k = 1; k <= TAIL; k++) {
+          const u = pt.u - k * 0.009;
+          if (u < 0) break;
+          const next = journeyPoint(pt.i, u, sway);
           ctx.beginPath();
-          ctx.arc(x, y, k ? 1.1 : 1.7, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${k ? 0.4 - k * 0.07 : 1})`;
-          ctx.fill();
+          ctx.moveTo(prev[0], prev[1]);
+          ctx.lineTo(next[0], next[1]);
+          ctx.strokeStyle = `hsla(${Math.round((280 * (k - 1)) / (TAIL - 1))},${sat}%,68%,${0.7 * (1 - k / (TAIL + 1))})`;
+          ctx.stroke();
+          prev = next;
         }
+        ctx.globalCompositeOperation = 'source-over';
+        const [hx, hy] = journeyPoint(pt.i, pt.u, sway);
+        ctx.beginPath();
+        ctx.arc(hx, hy, 1.7, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
         return true;
       });
 
