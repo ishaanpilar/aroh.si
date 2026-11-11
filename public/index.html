@@ -100,7 +100,7 @@
 
   .fade {
     opacity: 0;
-    animation: fade 1.8s ease forwards;
+    animation: fade 2.4s ease-in-out forwards;
     animation-delay: var(--d, 0s);
   }
 
@@ -122,11 +122,11 @@
 </header>
 
 <main class="stage">
-  <h1 class="fade" style="--d: 2.2s">Everything that rises must converge.</h1>
-  <p class="credit fade" style="--d: 2.8s">Pierre Teilhard de Chardin</p>
+  <h1 class="fade" style="--d: 2.6s">Everything that rises must converge.</h1>
+  <p class="credit fade" style="--d: 3.4s">Pierre Teilhard de Chardin</p>
 </main>
 
-<footer class="foot fade" style="--d: 3s">
+<footer class="foot fade" style="--d: 3.8s">
   <p>© 2026 Aroh</p>
   <p>Coming soon</p>
 </footer>
@@ -139,11 +139,12 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 
   const STRANDS = 9;
-  const STAGGER = 120;     // ms between strands starting to draw
-  const DRAW = 2000;       // ms for one strand to draw in
-  const TRUNK_DRAW = 700;  // ms for the single line to draw
+  const STAGGER = 160;     // ms between strands starting to draw
+  const DRAW = 2800;       // ms for one strand to draw in
+  const TRUNK_DRAW = 1100; // ms for the single line to draw
   const TRUNK = 0.3;       // share of a particle's journey spent on the single line
   const SEGMENTS = 56;
+  const GLOW_IN = 1800;    // ms for the end point's light to fade in
   const TAIL = 10;         // segments in the streak behind each dot
   const INK = '236,234,228';
   // One spectral hue per strand, red at the left through violet at the right.
@@ -151,11 +152,12 @@
   const HUES = Array.from({ length: STRANDS }, (_, i) => Math.round((280 * i) / (STRANDS - 1)));
 
   let W = 0, H = 0, feet = [], join = { x: 0, y: 0 }, tip = { x: 0, y: 0 };
-  let particles = [], nextSpawn = [], pulse = 0;
+  let particles = [], nextSpawn = [], energy = 0, glow = 0;
   let started = 0, last = 0, running = false, visible = true;
 
   const clamp01 = x => Math.max(0, Math.min(1, x));
-  const ease = x => 1 - Math.pow(1 - x, 3);
+  // Slow start, slow finish: nothing snaps into place.
+  const ease = x => x * x * x * (x * (x * 6 - 15) + 10);
 
   function measure() {
     const r = canvas.getBoundingClientRect();
@@ -218,7 +220,7 @@
     }
 
     const strandsDone = (STRANDS - 1) * STAGGER + DRAW;
-    const trunkP = ease(clamp01((elapsed - strandsDone * 0.8) / TRUNK_DRAW));
+    const trunkP = ease(clamp01((elapsed - strandsDone * 0.86) / TRUNK_DRAW));
 
     if (trunkP > 0) {
       ctx.beginPath();
@@ -230,6 +232,8 @@
     }
 
     if (trunkP >= 1) {
+      // First dots set off one by one at uneven moments, never as a row.
+      if (!nextSpawn.length) nextSpawn = Array.from({ length: STRANDS }, () => elapsed + 200 + Math.random() * 6500);
       for (let i = 0; i < STRANDS; i++) {
         if (dt && elapsed > nextSpawn[i]) {
           particles.push({ i, u: 0, speed: 1 / (2800 + Math.random() * 1200) });
@@ -238,7 +242,7 @@
       }
       particles = particles.filter(pt => {
         pt.u += pt.speed * dt;
-        if (pt.u >= 1 + TRUNK) { pulse = 1; return false; }
+        if (pt.u >= 1 + TRUNK) { energy = Math.min(1, energy + 0.45); return false; }
         // A short streak behind the dot that splits into a spectrum, like
         // light through glass. It loses its colour as the dot nears the join.
         const sat = 58 * (1 - clamp01((pt.u - 0.75) / 0.3));
@@ -265,18 +269,33 @@
         return true;
       });
 
-      // The point everything arrives at.
-      const halo = 34 + pulse * 20;
-      const g = ctx.createRadialGradient(tip.x, tip.y, 0, tip.x, tip.y, halo);
-      g.addColorStop(0, `rgba(255,255,255,${0.2 + pulse * 0.25})`);
+    }
+
+    // The point everything arrives at. Its light fades in as the single line
+    // reaches it, then breathes slowly on two unrelated rhythms so it never
+    // repeats exactly. An arriving dot adds energy that the light eases up to
+    // and lets go of gradually, so arrivals swell it instead of flashing it.
+    const shown = ease(clamp01((elapsed - strandsDone * 0.86 - TRUNK_DRAW * 0.75) / GLOW_IN));
+    if (shown > 0) {
+      energy *= Math.exp(-dt / 1100);
+      glow += (energy - glow) * (1 - Math.exp(-dt / 260));
+      const t = sway * 0.001;
+      const breath = 0.5 + 0.3 * Math.sin(t * 1.18) + 0.2 * Math.sin(t * 0.71 + 1);
+      const cx = tip.x + Math.sin(t * 0.37) * 2.5;
+      const cy = tip.y + Math.cos(t * 0.29) * 2;
+      const halo = (40 + breath * 12 + glow * 22) * (0.6 + 0.4 * shown);
+      const a = (0.15 + breath * 0.05 + glow * 0.2) * shown;
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, halo);
+      g.addColorStop(0, `rgba(255,255,255,${a})`);
+      g.addColorStop(0.25, `rgba(255,255,255,${a * 0.5})`);
+      g.addColorStop(0.6, `rgba(255,255,255,${a * 0.12})`);
       g.addColorStop(1, 'rgba(255,255,255,0)');
       ctx.fillStyle = g;
-      ctx.fillRect(tip.x - halo, tip.y - halo, halo * 2, halo * 2);
+      ctx.fillRect(cx - halo, cy - halo, halo * 2, halo * 2);
       ctx.beginPath();
-      ctx.arc(tip.x, tip.y, 3 + pulse * 1, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff';
+      ctx.arc(tip.x, tip.y, 3 + glow * 0.8, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${shown})`;
       ctx.fill();
-      pulse = Math.max(0, pulse - dt / 800);
     }
   }
 
@@ -304,8 +323,6 @@
       if (reduced.matches) drawStill();
     }
   }
-
-  nextSpawn = Array.from({ length: STRANDS }, (_, i) => 300 * i + Math.random() * 2500);
 
   new ResizeObserver(() => {
     measure();
