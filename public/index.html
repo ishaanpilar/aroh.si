@@ -13,7 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23090a12'/%3E%3Cg fill='none' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 54C12 36 32 40 32 22' stroke='%236f5cf0'/%3E%3Cpath d='M32 54V22' stroke='%23e8798a'/%3E%3Cpath d='M52 54C52 36 32 40 32 22' stroke='%23f2a65a'/%3E%3C/g%3E%3Ccircle cx='32' cy='14' r='5' fill='%23ffe9d2'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Geist+Mono:wght@400;500&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Red+Hat+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink: #090a12;
@@ -25,8 +25,8 @@
     --rose: #e8798a;
     --saffron: #f2a65a;
     --display: "Bricolage Grotesque", system-ui, sans-serif;
-    --body: "Instrument Sans", system-ui, sans-serif;
-    --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --body: "Schibsted Grotesk", system-ui, sans-serif;
+    --mono: "Red Hat Mono", ui-monospace, "SF Mono", Menlo, monospace;
     --gutter: clamp(20px, 5vw, 56px);
   }
 
@@ -93,13 +93,6 @@
     height: 7px;
     border-radius: 50%;
     background: var(--saffron);
-    box-shadow: 0 0 0 0 rgba(242, 166, 90, 0.6);
-    animation: beat 2.4s ease-out infinite;
-  }
-
-  @keyframes beat {
-    0% { box-shadow: 0 0 0 0 rgba(242, 166, 90, 0.55); }
-    70%, 100% { box-shadow: 0 0 0 9px rgba(242, 166, 90, 0); }
   }
 
   /* ── Hero ────────────────────────────────── */
@@ -262,7 +255,6 @@
 
   @media (prefers-reduced-motion: reduce) {
     .rise { opacity: 1; transform: none; animation: none; }
-    .status-dot { animation: none; }
   }
 </style>
 </head>
