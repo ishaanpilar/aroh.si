@@ -1,0 +1,11 @@
+{
+  "name": "aroh-si",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public"
+  },
+  "routes": [
+    { "pattern": "aroh.si", "custom_domain": true },
+    { "pattern": "www.aroh.si", "custom_domain": true }
+  ]
+}
