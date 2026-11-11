@@ -1,0 +1,121 @@
+---
+import '../styles/global.css';
+import '../styles/demos.css';
+import Workspace from '../components/Workspace.tsx';
+import MessageToTask from '../components/MessageToTask.tsx';
+
+// The six apps in spectral order, each with its own hue.
+const apps = [
+  { id: 'email', name: 'Email' },
+  { id: 'tasks', name: 'Tasks' },
+  { id: 'whatsapp', name: 'WhatsApp' },
+  { id: 'calendar', name: 'Calendar' },
+  { id: 'projects', name: 'Projects' },
+  { id: 'people', name: 'People' },
+];
+const hues = ['#f08a7b', '#e9bd5e', '#6fcf97', '#6cbdf0', '#a68cf5', '#ec8fc4'];
+// Each strand drops from under its app and bends into one point above the workspace.
+const strands = apps.map((_, i) => {
+  const x = 100 + i * 200;
+  return `M ${x} 0 C ${x} 110, 600 70, 600 190`;
+});
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aroh — one workspace for your whole company</title>
+  <meta name="description" content="Aroh brings your email, WhatsApp Business chats, projects, tasks, calendar and team into one workspace, with AI that sorts, drafts and plans for you.">
+  <meta name="theme-color" content="#070707">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300..600&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-row">
+    <a class="wordmark" href="#top">aroh</a>
+    <ul class="nav-links">
+      <li><a href="#tasks">Product</a></li>
+    </ul>
+    <button type="button" class="btn small">Get early access</button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <h1>Six places your work lives. One place to do it.</h1>
+        <p class="lede">Aroh brings your email, WhatsApp chats, projects, tasks, calendar and team into one workspace. Built-in AI sorts your inbox, drafts your replies and plans your day.</p>
+        <div class="hero-actions">
+          <button type="button" class="btn">Get early access</button>
+        </div>
+      </div>
+
+      <ul class="sources" aria-label="What Aroh brings together">
+        {apps.map(a => <li style={`--hue: var(--${a.id})`}>{a.name}</li>)}
+      </ul>
+      <svg class="strands" viewBox="0 0 1200 190" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          {hues.map((h, i) => (
+            <linearGradient id={`strand-${i}`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="190">
+              <stop offset="0" stop-color={h} stop-opacity="0.9" />
+              <stop offset="0.8" stop-color="#ffffff" stop-opacity="0.75" />
+            </linearGradient>
+          ))}
+        </defs>
+        {strands.map((d, i) => <path d={d} stroke={`url(#strand-${i})`} />)}
+        {strands.map((d, i) => (
+          <circle r="2.4">
+            <animateMotion dur="3.4s" begin={`-${i * 0.57}s`} repeatCount="indefinite" path={d} calcMode="spline" keyTimes="0;1" keySplines="0.4 0 0.6 1" />
+          </circle>
+        ))}
+      </svg>
+
+      <div class="stage">
+        <Workspace client:load />
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="tasks">
+    <div class="wrap">
+      <div class="chapter-head">
+        <div>
+          <p class="label"><i style="background: var(--email)"></i><i style="background: var(--whatsapp)"></i>Email and WhatsApp into Tasks</p>
+          <h2>Messages become tasks.</h2>
+        </div>
+        <p>A customer asks for something in an email or a WhatsApp chat. Aroh reads it and suggests a task with an owner and a due date. Nothing is created until you approve it.</p>
+      </div>
+
+      <MessageToTask client:visible />
+
+      <ul class="points">
+        <li><b>One click from message to task</b>No copying text between apps.</li>
+        <li><b>Owner and due date suggested</b>Change either before you approve.</li>
+        <li><b>The message stays attached</b>Open the task and the original request is there.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap">
+      <h2>Bring your work into one place.</h2>
+      <button type="button" class="btn">Get early access</button>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-row">
+    <p class="label">© 2026 Aroh</p>
+    <p class="label">Screens show a fictional company</p>
+  </div>
+</footer>
+
+</body>
+</html>

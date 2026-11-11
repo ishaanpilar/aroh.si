@@ -15,3 +15,14 @@ npx wrangler deploy
 ```
 
 This publishes `public/` and serves it on `aroh.si` and `www.aroh.si` (see `wrangler.jsonc`).
+
+## Full homepage (in progress)
+
+The full marketing homepage is a separate Astro project in `web/`. It is not deployed; `aroh.si` serves the holding page in `public/`.
+
+```sh
+cd web
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # output in web/dist
+```
