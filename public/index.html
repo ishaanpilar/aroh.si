@@ -3,31 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aroh — all your work in one app</title>
-<meta name="description" content="Aroh brings your email, WhatsApp Business chats, projects, tasks, calendar and team into one workspace, with AI that sorts, drafts and plans for you. In development.">
-<meta name="theme-color" content="#090a12">
-<meta property="og:title" content="Aroh — all your work in one app">
-<meta property="og:description" content="Email, WhatsApp, projects, tasks, calendar and team in one workspace, with AI built in. In development.">
+<title>Aroh</title>
+<meta name="description" content="Aroh. Something is rising.">
+<meta name="theme-color" content="#070707">
+<meta property="og:title" content="Aroh">
+<meta property="og:description" content="Something is rising.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://aroh.si/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23090a12'/%3E%3Cg fill='none' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 54C12 36 32 40 32 22' stroke='%236f5cf0'/%3E%3Cpath d='M32 54V22' stroke='%23e8798a'/%3E%3Cpath d='M52 54C52 36 32 40 32 22' stroke='%23f2a65a'/%3E%3C/g%3E%3Ccircle cx='32' cy='14' r='5' fill='%23ffe9d2'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070707'/%3E%3Cg fill='none' stroke='%23eceae4' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 54C12 36 32 40 32 22' opacity='.5'/%3E%3Cpath d='M32 54V22'/%3E%3Cpath d='M52 54C52 36 32 40 32 22' opacity='.5'/%3E%3C/g%3E%3Ccircle cx='32' cy='14' r='5' fill='%23ffffff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400..700&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300..600&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #090a12;
-    --night: #12142a;
-    --line: rgba(236, 233, 245, 0.1);
-    --paper: #ece9f5;
-    --muted: #9a9bb8;
-    --indigo: #6f5cf0;
-    --rose: #e8798a;
-    --saffron: #f2a65a;
+    --ink: #070707;
+    --paper: #eceae4;
+    --muted: #7d7b76;
     --display: "Host Grotesk", system-ui, sans-serif;
-    --body: "Host Grotesk", system-ui, sans-serif;
     --mono: "Red Hat Mono", ui-monospace, "SF Mono", Menlo, monospace;
-    --gutter: clamp(20px, 5vw, 56px);
+    --gutter: clamp(20px, 4vw, 44px);
   }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -35,113 +29,20 @@
   html { background: var(--ink); color-scheme: dark; }
 
   body {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100svh;
     margin: 0;
-    background:
-      radial-gradient(60% 45% at 50% 46%, rgba(111, 92, 240, 0.16), transparent 70%),
-      var(--ink);
-    background-repeat: no-repeat;
-    background-size: 100% 100svh;
+    overflow: hidden;
+    background: var(--ink);
     color: var(--paper);
-    font-family: var(--body);
-    font-size: 1.0625rem;
-    line-height: 1.55;
+    font-family: var(--display);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  .label {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* ── Top bar ─────────────────────────────── */
-  .top {
-    position: absolute;
-    inset: 0 0 auto 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 22px var(--gutter);
-    z-index: 2;
-  }
-
-  .wordmark {
-    font-family: var(--display);
-    font-size: 1.5rem;
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    line-height: 1;
-  }
-
-  .status {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    margin: 0;
-    padding: 7px 13px 7px 11px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: rgba(18, 20, 42, 0.6);
-  }
-
-  .status-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--saffron);
-  }
-
-  /* ── Hero ────────────────────────────────── */
-  .hero {
-    display: flex;
-    flex-direction: column;
-    min-height: 100svh;
-    padding: clamp(104px, 17vh, 168px) var(--gutter) 28px;
-  }
-
-  .hero-copy {
-    max-width: 780px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  h1 {
-    margin: 0;
-    font-family: var(--display);
-    font-size: clamp(2.6rem, 7.4vw, 5.25rem);
-    font-weight: 500;
-    letter-spacing: -0.035em;
-    line-height: 1.02;
-    text-wrap: balance;
-  }
-
-  h1 em {
-    font-style: normal;
-    color: var(--saffron);
-  }
-
-  .lede {
-    max-width: 560px;
-    margin: 26px auto 0;
-    color: var(--muted);
-    font-size: clamp(1rem, 1.5vw, 1.125rem);
-    text-wrap: pretty;
-  }
-
   .weave {
-    position: relative;
-    flex: 1;
-    width: 100%;
-    max-width: 980px;
-    min-height: clamp(220px, 34vh, 420px);
-    margin: 18px auto 0;
-  }
-
-  .weave canvas {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -149,191 +50,95 @@
     display: block;
   }
 
-  .sources {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    width: 100%;
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 0;
-    list-style: none;
+  .top, .stage, .foot { position: relative; }
+
+  .top { padding: 24px var(--gutter); }
+
+  .wordmark {
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
   }
 
-  .sources li {
-    padding-top: 12px;
+  .stage {
+    padding: clamp(72px, 17vh, 180px) var(--gutter) 0;
     text-align: center;
   }
 
-  /* ── Features ────────────────────────────── */
-  .features {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: clamp(56px, 10vw, 120px) var(--gutter) clamp(48px, 8vw, 96px);
-  }
-
-  .features h2 { margin: 0 0 28px; }
-
-  .feature-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    border-top: 1px solid var(--line);
-  }
-
-  .feature {
-    padding: 28px 28px 8px 0;
-  }
-
-  .feature + .feature {
-    padding-left: 28px;
-    border-left: 1px solid var(--line);
-  }
-
-  .feature .label { color: var(--saffron); }
-
-  .feature h3 {
-    margin: 14px 0 10px;
-    font-family: var(--display);
-    font-size: 1.5rem;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-  }
-
-  .feature p {
+  h1 {
     margin: 0;
-    color: var(--muted);
+    font-size: clamp(1.75rem, 4.2vw, 3.25rem);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
   }
 
-  /* ── Footer ──────────────────────────────── */
   .foot {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
-    gap: 8px 24px;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 24px var(--gutter) 36px;
-    border-top: 1px solid var(--line);
+    gap: 24px;
+    padding: 24px var(--gutter);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   .foot p { margin: 0; }
 
-  /* ── Load sequence ───────────────────────── */
-  .rise {
+  .fade {
     opacity: 0;
-    transform: translateY(14px);
-    animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    animation: fade 1.8s ease forwards;
     animation-delay: var(--d, 0s);
   }
 
-  @keyframes rise {
-    to { opacity: 1; transform: none; }
-  }
-
-  /* ── Small screens ───────────────────────── */
-  @media (max-width: 760px) {
-    .feature-grid { grid-template-columns: 1fr; }
-    .feature { padding: 24px 0; }
-    .feature + .feature {
-      padding-left: 0;
-      border-left: 0;
-      border-top: 1px solid var(--line);
-    }
-  }
-
-  @media (max-width: 520px) {
-    .sources {
-      width: auto;
-      margin-inline: calc(var(--gutter) * -1);
-    }
-    .sources .label {
-      font-size: 0.6875rem;
-      letter-spacing: 0;
-    }
-    .status { padding: 6px 11px 6px 9px; }
+  @keyframes fade {
+    to { opacity: 1; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .rise { opacity: 1; transform: none; animation: none; }
+    .fade { opacity: 1; animation: none; }
   }
 </style>
 </head>
 <body>
 
+<canvas class="weave" aria-hidden="true"></canvas>
+
 <header class="top">
   <span class="wordmark">aroh</span>
-  <p class="status label"><span class="status-dot" aria-hidden="true"></span>In development</p>
 </header>
 
-<main>
-  <section class="hero">
-    <div class="hero-copy">
-      <h1 class="rise">All your work, rising into <em>one app.</em></h1>
-      <p class="lede rise" style="--d: 0.15s">Aroh brings your email, WhatsApp Business chats, projects, tasks, calendar and team into one workspace. Built-in AI sorts your inbox, drafts your replies and plans your day.</p>
-    </div>
-
-    <div class="weave" aria-hidden="true"><canvas></canvas></div>
-
-    <ul class="sources rise" style="--d: 0.3s" aria-label="What Aroh brings together">
-      <li class="label">Email</li>
-      <li class="label">WhatsApp</li>
-      <li class="label">Projects</li>
-      <li class="label">Tasks</li>
-      <li class="label">Calendar</li>
-      <li class="label">People</li>
-    </ul>
-  </section>
-
-  <section class="features">
-    <h2 class="label">What we're building</h2>
-    <div class="feature-grid">
-      <article class="feature">
-        <span class="label">Email</span>
-        <h3>An inbox that files itself</h3>
-        <p>Write your rules in plain words. Aroh reads each new email and files it for you.</p>
-      </article>
-      <article class="feature">
-        <span class="label">Email + WhatsApp → Tasks</span>
-        <h3>Messages become tasks</h3>
-        <p>Turn an email or a WhatsApp chat into a task with an owner and a due date, in one click.</p>
-      </article>
-      <article class="feature">
-        <span class="label">Tasks + Calendar</span>
-        <h3>Your day, planned for you</h3>
-        <p>Aroh fits your tasks into your calendar around your meetings, and replans when the day changes.</p>
-      </article>
-    </div>
-  </section>
+<main class="stage">
+  <h1 class="fade" style="--d: 2.2s">Something is rising.</h1>
 </main>
 
-<footer class="foot">
-  <p class="label">© 2026 Aroh</p>
-  <p class="label">We're still building. Check back soon.</p>
+<footer class="foot fade" style="--d: 3s">
+  <p>© 2026 Aroh</p>
+  <p>Soon</p>
 </footer>
 
 <script>
 (() => {
-  const canvas = document.querySelector('.weave canvas');
+  const canvas = document.querySelector('.weave');
   const ctx = canvas.getContext('2d');
-  const footEls = [...document.querySelectorAll('.sources li')];
+  const headline = document.querySelector('h1');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 
-  // One colour per strand, indigo at the left through to saffron at the right.
-  const COLORS = [
-    [111, 92, 240], [146, 104, 232], [192, 111, 201],
-    [232, 121, 138], [240, 144, 122], [242, 166, 90]
-  ];
-  const STAGGER = 140;     // ms between strands starting to draw
-  const DRAW = 1900;       // ms for one strand to draw in
-  const TRUNK_DRAW = 600;  // ms for the single line to draw
+  const STRANDS = 9;
+  const STAGGER = 120;     // ms between strands starting to draw
+  const DRAW = 2000;       // ms for one strand to draw in
+  const TRUNK_DRAW = 700;  // ms for the single line to draw
   const TRUNK = 0.3;       // share of a particle's journey spent on the single line
-  const SEGMENTS = 48;
+  const SEGMENTS = 56;
+  const INK = '236,234,228';
 
   let W = 0, H = 0, feet = [], join = { x: 0, y: 0 }, tip = { x: 0, y: 0 };
   let particles = [], nextSpawn = [], pulse = 0;
   let started = 0, last = 0, running = false, visible = true;
 
-  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
   const clamp01 = x => Math.max(0, Math.min(1, x));
   const ease = x => 1 - Math.pow(1 - x, 3);
 
@@ -345,21 +150,20 @@
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    feet = footEls.map(el => {
-      const b = el.getBoundingClientRect();
-      return b.left + b.width / 2 - r.left;
-    });
-    join = { x: W / 2, y: H * 0.4 };
-    tip = { x: W / 2, y: 48 };
+    feet = Array.from({ length: STRANDS }, (_, i) => W * (0.04 + 0.92 * (i / (STRANDS - 1))));
+    const h = headline.getBoundingClientRect();
+    const tipY = h.bottom - r.top + Math.max(44, H * 0.07);
+    tip = { x: W / 2, y: tipY };
+    join = { x: W / 2, y: tipY + (H - tipY) * 0.34 };
   }
 
   // Point on strand i at u (0 = foot, 1 = where the strands join).
   function strandPoint(i, u, sway) {
     const fx = feet[i];
-    const s1 = Math.sin(sway * 0.00045 + i * 1.7) * W * 0.014;
-    const s2 = Math.cos(sway * 0.00035 + i * 2.3) * W * 0.01;
-    const x1 = fx + s1, y1 = H * 0.6;
-    const x2 = join.x + (fx - join.x) * 0.1 + s2, y2 = join.y + (H - join.y) * 0.42;
+    const s1 = Math.sin(sway * 0.0004 + i * 1.7) * W * 0.012;
+    const s2 = Math.cos(sway * 0.0003 + i * 2.3) * W * 0.008;
+    const x1 = fx + s1, y1 = join.y + (H - join.y) * 0.5;
+    const x2 = join.x + (fx - join.x) * 0.08 + s2, y2 = join.y + (H - join.y) * 0.4;
     const v = 1 - u;
     return [
       v * v * v * fx + 3 * v * v * u * x1 + 3 * v * u * u * x2 + u * u * u * join.x,
@@ -379,82 +183,69 @@
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    for (let i = 0; i < feet.length; i++) {
+    const grad = ctx.createLinearGradient(0, H, 0, join.y);
+    grad.addColorStop(0, `rgba(${INK},0.03)`);
+    grad.addColorStop(1, `rgba(${INK},0.62)`);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1;
+
+    for (let i = 0; i < STRANDS; i++) {
       const p = ease(clamp01((elapsed - i * STAGGER) / DRAW));
       if (p <= 0) continue;
-      const c = COLORS[i];
-      const grad = ctx.createLinearGradient(0, H, 0, join.y);
-      grad.addColorStop(0, rgba(c, 0.12));
-      grad.addColorStop(1, rgba(c, 0.95));
-
       ctx.beginPath();
       for (let s = 0; s <= SEGMENTS; s++) {
         const [x, y] = strandPoint(i, (s / SEGMENTS) * p, sway);
         s ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
       }
-      ctx.strokeStyle = rgba(c, 0.07);
-      ctx.lineWidth = 7;
-      ctx.stroke();
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 1.3;
       ctx.stroke();
     }
 
-    const strandsDone = (feet.length - 1) * STAGGER + DRAW;
-    const trunkP = ease(clamp01((elapsed - strandsDone * 0.82) / TRUNK_DRAW));
+    const strandsDone = (STRANDS - 1) * STAGGER + DRAW;
+    const trunkP = ease(clamp01((elapsed - strandsDone * 0.8) / TRUNK_DRAW));
 
     if (trunkP > 0) {
-      const ty = join.y + (tip.y - join.y) * trunkP;
-      const grad = ctx.createLinearGradient(0, join.y, 0, tip.y);
-      grad.addColorStop(0, 'rgba(232,121,138,0.95)');
-      grad.addColorStop(1, 'rgba(255,233,210,1)');
       ctx.beginPath();
       ctx.moveTo(join.x, join.y);
-      ctx.lineTo(tip.x, ty);
-      ctx.strokeStyle = 'rgba(242,166,90,0.12)';
-      ctx.lineWidth = 10;
-      ctx.stroke();
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 2;
+      ctx.lineTo(tip.x, join.y + (tip.y - join.y) * trunkP);
+      ctx.strokeStyle = `rgba(${INK},0.9)`;
+      ctx.lineWidth = 1.4;
       ctx.stroke();
     }
 
     if (trunkP >= 1) {
-      // Particles: one message at a time travelling up its strand.
-      for (let i = 0; i < feet.length; i++) {
+      for (let i = 0; i < STRANDS; i++) {
         if (dt && elapsed > nextSpawn[i]) {
-          particles.push({ i, u: 0, speed: 1 / (2400 + Math.random() * 900) });
-          nextSpawn[i] = elapsed + 1300 + Math.random() * 2800;
+          particles.push({ i, u: 0, speed: 1 / (2800 + Math.random() * 1200) });
+          nextSpawn[i] = elapsed + 2200 + Math.random() * 4200;
         }
       }
       particles = particles.filter(pt => {
         pt.u += pt.speed * dt;
         if (pt.u >= 1 + TRUNK) { pulse = 1; return false; }
-        const c = pt.u > 1 ? [255, 233, 210] : COLORS[pt.i];
         for (let k = 5; k >= 0; k--) {
-          const u = pt.u - k * 0.011;
+          const u = pt.u - k * 0.01;
           if (u < 0) continue;
           const [x, y] = journeyPoint(pt.i, u, sway);
           ctx.beginPath();
-          ctx.arc(x, y, k ? 1.4 : 2.1, 0, Math.PI * 2);
-          ctx.fillStyle = rgba(c, k ? 0.5 - k * 0.08 : 1);
+          ctx.arc(x, y, k ? 1.1 : 1.7, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${k ? 0.4 - k * 0.07 : 1})`;
           ctx.fill();
         }
         return true;
       });
 
       // The point everything arrives at.
-      const halo = 26 + pulse * 16;
+      const halo = 34 + pulse * 20;
       const g = ctx.createRadialGradient(tip.x, tip.y, 0, tip.x, tip.y, halo);
-      g.addColorStop(0, `rgba(242,166,90,${0.38 + pulse * 0.4})`);
-      g.addColorStop(1, 'rgba(242,166,90,0)');
+      g.addColorStop(0, `rgba(255,255,255,${0.2 + pulse * 0.25})`);
+      g.addColorStop(1, 'rgba(255,255,255,0)');
       ctx.fillStyle = g;
       ctx.fillRect(tip.x - halo, tip.y - halo, halo * 2, halo * 2);
       ctx.beginPath();
-      ctx.arc(tip.x, tip.y, 3.6 + pulse * 1.2, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffe9d2';
+      ctx.arc(tip.x, tip.y, 3 + pulse * 1, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
       ctx.fill();
-      pulse = Math.max(0, pulse - dt / 700);
+      pulse = Math.max(0, pulse - dt / 800);
     }
   }
 
@@ -483,17 +274,17 @@
     }
   }
 
-  nextSpawn = footEls.map((_, i) => 400 * i + Math.random() * 1500);
+  nextSpawn = Array.from({ length: STRANDS }, (_, i) => 300 * i + Math.random() * 2500);
 
   new ResizeObserver(() => {
     measure();
     if (!running) drawStill();
   }).observe(canvas);
 
-  new IntersectionObserver(entries => {
-    visible = entries[0].isIntersecting;
+  document.addEventListener('visibilitychange', () => {
+    visible = !document.hidden;
     update();
-  }).observe(canvas);
+  });
 
   reduced.addEventListener('change', update);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
