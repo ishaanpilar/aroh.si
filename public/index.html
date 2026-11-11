@@ -204,8 +204,8 @@
       const p = ease(clamp01((elapsed - i * STAGGER) / DRAW));
       if (p <= 0) continue;
       const grad = ctx.createLinearGradient(0, H, 0, join.y);
-      grad.addColorStop(0, `hsla(${HUES[i]},95%,64%,0.14)`);
-      grad.addColorStop(0.55, `hsla(${HUES[i]},95%,72%,0.6)`);
+      grad.addColorStop(0, `hsla(${HUES[i]},58%,76%,0.14)`);
+      grad.addColorStop(0.55, `hsla(${HUES[i]},58%,78%,0.58)`);
       grad.addColorStop(0.92, `rgba(${INK},0.62)`);
       grad.addColorStop(1, `rgba(${INK},0.62)`);
       ctx.strokeStyle = grad;
@@ -241,9 +241,9 @@
         if (pt.u >= 1 + TRUNK) { pulse = 1; return false; }
         // A short streak behind the dot that splits into a spectrum, like
         // light through glass. It loses its colour as the dot nears the join.
-        const sat = 95 * (1 - clamp01((pt.u - 0.75) / 0.3));
+        const sat = 58 * (1 - clamp01((pt.u - 0.75) / 0.3));
         ctx.globalCompositeOperation = 'lighter';
-        ctx.lineWidth = 1.6;
+        ctx.lineWidth = 1.3;
         let prev = journeyPoint(pt.i, pt.u, sway);
         for (let k = 1; k <= TAIL; k++) {
           const u = pt.u - k * 0.009;
@@ -252,7 +252,7 @@
           ctx.beginPath();
           ctx.moveTo(prev[0], prev[1]);
           ctx.lineTo(next[0], next[1]);
-          ctx.strokeStyle = `hsla(${Math.round((280 * (k - 1)) / (TAIL - 1))},${sat}%,68%,${0.7 * (1 - k / (TAIL + 1))})`;
+          ctx.strokeStyle = `hsla(${Math.round((280 * (k - 1)) / (TAIL - 1))},${sat}%,80%,${0.55 * (1 - k / (TAIL + 1))})`;
           ctx.stroke();
           prev = next;
         }
