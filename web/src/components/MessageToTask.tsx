@@ -84,9 +84,8 @@ export default function MessageToTask() {
   };
 
   return (
-    <div className="app">
-      <div className="m2t">
-        <div className="m2t-msg">
+    <div className="m2t">
+        <div className="m2t-msg app">
           <div className="tabs" role="tablist" aria-label="Message source">
             {(['email', 'whatsapp'] as Source[]).map(s => (
               <button key={s} type="button" role="tab" aria-selected={source === s} onClick={() => pick(s)}>
@@ -121,18 +120,16 @@ export default function MessageToTask() {
               <>
                 <span className="chip tint" style={{ '--hue': 'var(--tasks)' } as React.CSSProperties}>Task created</span>
                 <span className="note">Assigned to {m.task.owner}, due {m.task.due}.</span>
+                <button type="button" className="linkish replay" onClick={() => morph(() => setStage('idle'))}>Replay</button>
               </>
             )}
           </div>
         </div>
 
-        <div className="m2t-side">
+        <div className="m2t-side app">
           <div className="bar">
             <span className="dot" style={{ '--hue': 'var(--projects)' } as React.CSSProperties} />
             Tamarind Café fit-out
-            {stage === 'created' && (
-              <button type="button" className="linkish replay" onClick={() => morph(() => setStage('idle'))}>Replay</button>
-            )}
           </div>
           <div className="board">
             <div className="board-col">
@@ -150,7 +147,6 @@ export default function MessageToTask() {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }

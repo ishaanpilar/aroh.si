@@ -49,7 +49,7 @@ const strands = apps.map((_, i) => {
   <section class="hero">
     <div class="wrap">
       <div class="hero-copy">
-        <h1>Six places your work lives. One place to do it.</h1>
+        <h1><span>Six places your work lives.</span> One place to do it.</h1>
         <p class="lede">Aroh brings your email, WhatsApp chats, projects, tasks, calendar and team into one workspace. Built-in AI sorts your inbox, drafts your replies and plans your day.</p>
         <div class="hero-actions">
           <button type="button" class="btn">Get early access</button>
@@ -82,13 +82,10 @@ const strands = apps.map((_, i) => {
     </div>
   </section>
 
-  <section class="chapter" id="tasks">
+  <section class="chapter" id="tasks" style="--hue: var(--tasks)">
     <div class="wrap">
       <div class="chapter-head">
-        <div>
-          <p class="label"><i style="background: var(--email)"></i><i style="background: var(--whatsapp)"></i>Email and WhatsApp into Tasks</p>
-          <h2>Messages become tasks.</h2>
-        </div>
+        <h2>Messages become tasks.</h2>
         <p>A customer asks for something in an email or a WhatsApp chat. Aroh reads it and suggests a task with an owner and a due date. Nothing is created until you approve it.</p>
       </div>
 
@@ -104,6 +101,7 @@ const strands = apps.map((_, i) => {
 
   <section class="closing">
     <div class="wrap">
+      <div class="spectrum" aria-hidden="true"></div>
       <h2>Bring your work into one place.</h2>
       <button type="button" class="btn">Get early access</button>
     </div>

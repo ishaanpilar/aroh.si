@@ -4,4 +4,5 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://aroh.si',
   integrations: [react()],
+  devToolbar: { enabled: false },
 });

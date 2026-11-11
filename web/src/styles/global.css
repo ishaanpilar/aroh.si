@@ -76,6 +76,8 @@ button { font: inherit; color: inherit; }
   cursor: pointer;
   transition: background 0.15s ease, transform 0.15s ease;
 }
+.btn { box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px -8px rgba(255, 255, 255, 0.18); }
+.btn.ghost { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06); }
 .btn:hover { background: #ffffff; }
 .btn:active { transform: translateY(1px); }
 .btn.small { height: 34px; padding: 0 14px; font-size: 0.875rem; border-radius: 8px; }
@@ -134,6 +136,7 @@ button { font: inherit; color: inherit; }
   line-height: 1.02;
   text-wrap: balance;
 }
+.hero h1 span { color: var(--muted); }
 .hero .lede {
   max-width: 600px;
   margin-top: 24px;
@@ -170,12 +173,54 @@ button { font: inherit; color: inherit; }
 .strands path { fill: none; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
 .strands circle { fill: #ffffff; }
 
-.stage { padding-bottom: clamp(72px, 12vh, 140px); }
+/* The workspace sits in light: colour pools behind its top edge, where the
+   strands arrive, and a pale floor glow lifts it off the page. */
+.stage { position: relative; padding-bottom: clamp(72px, 12vh, 140px); }
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: -70px 4% auto;
+  height: 260px;
+  z-index: -1;
+  background: linear-gradient(90deg, var(--email), var(--tasks), var(--whatsapp), var(--calendar), var(--projects), var(--people));
+  filter: blur(90px);
+  opacity: 0.2;
+  pointer-events: none;
+}
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: auto 10% clamp(20px, 5vh, 70px);
+  height: 160px;
+  z-index: -1;
+  background: radial-gradient(50% 100% at 50% 100%, rgba(236, 234, 228, 0.16), transparent 70%);
+  filter: blur(30px);
+  pointer-events: none;
+}
+.hero { position: relative; isolation: isolate; }
+.chapter, .closing { isolation: isolate; }
 
 /* ── Chapters ────────────────────────────── */
 .chapter {
+  position: relative;
   padding: clamp(72px, 12vh, 140px) 0;
-  border-top: 1px solid var(--line);
+}
+/* Section rules fade out towards the edges instead of running wall to wall. */
+.chapter::before, .closing::before, .foot::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong) 18%, var(--line-strong) 82%, transparent);
+}
+/* A wash of the chapter's own colour behind its demo. */
+.chapter::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(60% 46% at 22% 44%, color-mix(in srgb, var(--hue) 9%, transparent), transparent 70%);
+  pointer-events: none;
 }
 .chapter-head {
   display: grid;
@@ -184,8 +229,6 @@ button { font: inherit; color: inherit; }
   align-items: end;
   margin-bottom: clamp(36px, 6vh, 64px);
 }
-.chapter-head .label { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-.chapter-head .label i { width: 9px; height: 9px; border-radius: 3px; }
 .chapter h2 {
   font-size: clamp(2rem, 4.4vw, 3.25rem);
   font-weight: 400;
@@ -208,9 +251,27 @@ button { font: inherit; color: inherit; }
 
 /* ── Closing ─────────────────────────────── */
 .closing {
+  position: relative;
   padding: clamp(88px, 16vh, 180px) 0;
-  border-top: 1px solid var(--line);
   text-align: center;
+  overflow: hidden;
+}
+/* The six app colours as one line of light, with its own soft reflection. */
+.spectrum {
+  position: relative;
+  width: min(560px, 80%);
+  height: 1px;
+  margin: 0 auto clamp(40px, 7vh, 72px);
+  background: linear-gradient(90deg, transparent, var(--email), var(--tasks), var(--whatsapp), var(--calendar), var(--projects), var(--people), transparent);
+}
+.spectrum::after {
+  content: "";
+  position: absolute;
+  inset: -34px 6% auto;
+  height: 68px;
+  background: inherit;
+  filter: blur(40px);
+  opacity: 0.4;
 }
 .closing h2 {
   font-size: clamp(2.25rem, 5.4vw, 4rem);
@@ -221,7 +282,7 @@ button { font: inherit; color: inherit; }
 }
 .closing .btn { margin-top: 32px; }
 
-.foot { border-top: 1px solid var(--line); padding: 28px 0 40px; }
+.foot { position: relative; padding: 28px 0 40px; }
 .foot-row { display: flex; justify-content: space-between; gap: 24px; }
 
 /* ── Small screens ───────────────────────── */
