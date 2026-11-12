@@ -32,7 +32,7 @@
 
   *, *::before, *::after { box-sizing: border-box; }
 
-  html { background: var(--ink); color-scheme: dark; }
+  html { background: var(--ink); color-scheme: dark; overscroll-behavior: none; }
 
   body {
     position: relative;
@@ -41,6 +41,7 @@
     min-height: 100svh;
     margin: 0;
     overflow: hidden;
+    touch-action: pinch-zoom;
     background: var(--ink);
     color: var(--paper);
     font-family: var(--display);
@@ -153,12 +154,17 @@
   const GLOW_IN = 1800;    // ms for the end point's light to fade in
   const TAIL = 10;         // segments in the streak behind each dot
   const INK = '236,234,228';
+  const CRUISE = 0.0004;   // journey per ms of an unhurried dot, for comparing speeds
+  const SPRING = 0.00034;  // stiffness of the end point's spring
+  const DAMPING = 0.0085;  // low enough that it overshoots and settles in a few swings
   // One spectral hue per strand, red at the left through violet at the right.
   // The tint fades to white before the strands meet: a prism run backwards.
   const HUES = Array.from({ length: STRANDS }, (_, i) => Math.round((280 * i) / (STRANDS - 1)));
 
   let W = 0, H = 0, feet = [], join = { x: 0, y: 0 }, tip = { x: 0, y: 0 };
   let particles = [], nextSpawn = [], energy = 0, glow = 0;
+  // The end point sits on a spring: kick is its offset in px, kickV its speed.
+  let kick = 0, kickV = 0, rings = [], ready = false, pending = 0, lastFling = 0, lastRing = 0;
   let started = 0, last = 0, running = false, visible = true;
 
   const clamp01 = x => Math.max(0, Math.min(1, x));
@@ -198,7 +204,7 @@
   function journeyPoint(i, u, sway) {
     if (u <= 1) return strandPoint(i, u, sway);
     const k = Math.min((u - 1) / TRUNK, 1);
-    return [join.x + (tip.x - join.x) * k, join.y + (tip.y - join.y) * k];
+    return [join.x + (tip.x - join.x) * k, join.y + (tip.y + kick - join.y) * k];
   }
 
   function draw(elapsed, sway, dt) {
@@ -231,32 +237,51 @@
     if (trunkP > 0) {
       ctx.beginPath();
       ctx.moveTo(join.x, join.y);
-      ctx.lineTo(tip.x, join.y + (tip.y - join.y) * trunkP);
+      ctx.lineTo(tip.x, join.y + (tip.y + kick - join.y) * trunkP);
       ctx.strokeStyle = `rgba(${INK},0.9)`;
       ctx.lineWidth = 1.4;
       ctx.stroke();
     }
 
-    if (trunkP >= 1) {
+    ready = trunkP >= 1;
+    if (ready) {
       // First dots set off one by one at uneven moments, never as a row.
       if (!nextSpawn.length) nextSpawn = Array.from({ length: STRANDS }, () => elapsed + 200 + Math.random() * 6500);
       for (let i = 0; i < STRANDS; i++) {
         if (dt && elapsed > nextSpawn[i]) {
-          particles.push({ i, u: 0, speed: 1 / (2800 + Math.random() * 1200) });
+          const base = 1 / (2800 + Math.random() * 1200);
+          particles.push({ i, u: 0, base, v: base });
           nextSpawn[i] = elapsed + 2200 + Math.random() * 4200;
         }
       }
       particles = particles.filter(pt => {
-        pt.u += pt.speed * dt;
-        if (pt.u >= 1 + TRUNK) { energy = Math.min(1, energy + 0.45); return false; }
+        // A thrown dot sheds its extra speed gradually, like anything thrown.
+        pt.v += (pt.base - pt.v) * (1 - Math.exp(-dt / 1000));
+        pt.u += pt.v * dt;
+        if (pt.u >= 1 + TRUNK) {
+          // Arrival knocks the end point upward; the harder the hit, the
+          // further it travels before the spring pulls it back.
+          // A point already pushed up takes less from each new hit, so a
+          // long scroll holds it aloft without sending it into the text.
+          const force = Math.max(0.05, Math.min(0.42, pt.v * 170));
+          const hit = force * clamp01(1 + kick / 24);
+          kickV = Math.max(-0.5, kickV - hit);
+          energy = Math.min(1, energy + 0.45);
+          if (force > 0.14 && elapsed - lastRing > 320) {
+            rings.push({ age: 0, force: force / 0.42 });
+            lastRing = elapsed;
+          }
+          return false;
+        }
         // A short streak behind the dot that splits into a spectrum, like
         // light through glass. It loses its colour as the dot nears the join.
         const sat = 58 * (1 - clamp01((pt.u - 0.75) / 0.3));
+        const stretch = Math.max(1, Math.min(3.5, pt.v / CRUISE));
         ctx.globalCompositeOperation = 'lighter';
         ctx.lineWidth = 1.3;
         let prev = journeyPoint(pt.i, pt.u, sway);
         for (let k = 1; k <= TAIL; k++) {
-          const u = pt.u - k * 0.009;
+          const u = pt.u - k * 0.009 * stretch;
           if (u < 0) break;
           const next = journeyPoint(pt.i, u, sway);
           ctx.beginPath();
@@ -285,10 +310,17 @@
     if (shown > 0) {
       energy *= Math.exp(-dt / 1100);
       glow += (energy - glow) * (1 - Math.exp(-dt / 260));
+      // Step the spring in small slices so it stays stable on slow frames.
+      for (let left = dt; left > 0; left -= 8) {
+        const h = Math.min(8, left);
+        kickV += (-SPRING * kick - DAMPING * kickV) * h;
+        kick += kickV * h;
+      }
+      if (Math.abs(kick) < 0.01 && Math.abs(kickV) < 0.0005) kick = kickV = 0;
       const t = sway * 0.001;
       const breath = 0.5 + 0.3 * Math.sin(t * 1.18) + 0.2 * Math.sin(t * 0.71 + 1);
       const cx = tip.x + Math.sin(t * 0.37) * 2.5;
-      const cy = tip.y + Math.cos(t * 0.29) * 2;
+      const cy = tip.y + kick * 0.7 + Math.cos(t * 0.29) * 2;
       const halo = (40 + breath * 12 + glow * 22) * (0.6 + 0.4 * shown);
       const a = (0.15 + breath * 0.05 + glow * 0.2) * shown;
       const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, halo);
@@ -299,9 +331,21 @@
       ctx.fillStyle = g;
       ctx.fillRect(cx - halo, cy - halo, halo * 2, halo * 2);
       ctx.beginPath();
-      ctx.arc(tip.x, tip.y, 3 + glow * 0.8, 0, Math.PI * 2);
+      ctx.arc(tip.x, tip.y + kick, 3 + glow * 0.8, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(255,255,255,${shown})`;
       ctx.fill();
+      // A hard hit sends one thin ring outward from where the point rests.
+      rings = rings.filter(ring => {
+        ring.age += dt / 750;
+        if (ring.age >= 1) return false;
+        const out = 1 - Math.pow(1 - ring.age, 3);
+        ctx.beginPath();
+        ctx.arc(tip.x, tip.y, 6 + out * (30 + ring.force * 26), 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255,255,255,${0.32 * ring.force * (1 - ring.age)})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        return true;
+      });
     }
   }
 
@@ -314,7 +358,48 @@
     requestAnimationFrame(frame);
   }
 
+  // Scrolling or swiping throws dots up the strands. power runs 0 to 1.
+  function fling(power) {
+    if (!running || !ready) return;
+    for (const pt of particles) pt.v += pt.base * power * 5;
+    const order = Array.from({ length: STRANDS }, (_, i) => i).sort(() => Math.random() - 0.5);
+    const count = Math.min(1 + Math.round(power * 3), Math.max(0, 48 - particles.length));
+    for (let n = 0; n < count; n++) {
+      const base = 1 / (2800 + Math.random() * 1200);
+      particles.push({ i: order[n], u: 0, base, v: base * (5 + power * 8) * (0.8 + Math.random() * 0.4) });
+    }
+  }
+
+  // Gestures arrive as many small events; gather them and throw in bursts.
+  function gather(amount) {
+    pending += amount;
+    const now = performance.now();
+    if (now - lastFling < 90) return;
+    fling(Math.max(0.2, Math.min(1, pending / 220)));
+    pending = 0;
+    lastFling = now;
+  }
+
+  addEventListener('wheel', e => {
+    gather(Math.hypot(e.deltaX, e.deltaY) * (e.deltaMode === 1 ? 16 : 1));
+  }, { passive: true });
+
+  let drag = null;
+  addEventListener('pointerdown', e => { drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; });
+  addEventListener('pointermove', e => {
+    if (!drag || drag.id !== e.pointerId) return;
+    gather(Math.hypot(e.clientX - drag.x, e.clientY - drag.y) * 2.4);
+    drag.x = e.clientX;
+    drag.y = e.clientY;
+  });
+  for (const type of ['pointerup', 'pointercancel']) addEventListener(type, () => { drag = null; });
+
+  addEventListener('keydown', e => {
+    if ([' ', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown'].includes(e.key)) gather(160);
+  });
+
   function drawStill() {
+    kick = kickV = 0;
     draw(1e6, 0, 0);
   }
 
